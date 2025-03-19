@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "server"
+version = "0.1.0"
+description = ""
+authors = ["Yeonu-Kim <ywk0524@snu.ac.kr>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+sqlmodel = "^0.0.24"
+fastapi = {extras = ["standard"], version = "^0.115.11"}
+dotenv = "^0.9.9"
+mysqlclient = "^2.2.7"
+
+
+[tool.poetry.group.dev.dependencies]
+pylint = "^3.3.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
