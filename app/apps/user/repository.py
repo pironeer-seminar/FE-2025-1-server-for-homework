@@ -8,8 +8,11 @@ class UserRepository:
         self._db = db
         print(type(db))
 
-    def get_users(self) -> List[User]:
-        return self._db.execute(select(User)).all()
+    def get_by_email(self, email: str):
+        return self._db.query(User).filter(User.email == email).first()
 
-    def get_user_by_id(self, user_id: int) -> User:
-        return self._db.get(User, user_id)
+    def create_user(self, user: User):
+        self._db.add(user)
+        self._db.commit()
+        self._db.refresh(user)
+        return user
