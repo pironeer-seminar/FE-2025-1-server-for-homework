@@ -1,4 +1,4 @@
-import os 
+import os
 
 class DBConfig():
     def __init__(self):
