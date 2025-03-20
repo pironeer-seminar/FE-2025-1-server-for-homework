@@ -1,23 +1,4 @@
 services:
-  app:
-    build: .
-    container_name: fastapi_app
-    env_file: .env.dev
-    depends_on:
-      db:
-        condition: service_healthy
-    ports:
-      - "8000:8000"
-    networks:
-      - mynetwork
-    environment:
-      - PYTHONPATH=/app
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-      - DB_USERNAME=${DB_USERNAME}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
-
   db:
     image: mysql:8.0
     container_name: mysql_db
@@ -39,6 +20,25 @@ services:
       retries: 3
       start_period: 10s
       timeout: 5s
+
+  app:
+    build: .
+    container_name: fastapi_app
+    env_file: .env.dev
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    networks:
+      - mynetwork
+    environment:
+      - PYTHONPATH=/app
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
 
 volumes:
   db_data:
