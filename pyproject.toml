@@ -11,6 +11,7 @@ sqlmodel = "^0.0.24"
 fastapi = {extras = ["standard"], version = "^0.115.11"}
 dotenv = "^0.9.9"
 mysqlclient = "^2.2.7"
+bcrypt = "^4.3.0"
 
 
 [tool.poetry.group.dev.dependencies]

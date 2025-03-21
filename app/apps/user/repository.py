@@ -16,3 +16,6 @@ class UserRepository:
         self._db.commit()
         self._db.refresh(user)
         return user
+
+    def get_users(self) -> List[User]:
+        return self._db.execute(select(User)).all()

@@ -1,4 +1,5 @@
 from typing import Annotated
+from typing import List
 from fastapi import APIRouter
 from fastapi import Depends
 from sqlmodel import Session
@@ -15,6 +16,7 @@ from app.apps.common.common_exception import InvalidFormException
 from app.apps.user.schemas import SignUpRequest
 from app.apps.user.schemas import SignInRequest
 from app.apps.common.schemas import TokenRequest
+from app.apps.user.model import User
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -44,3 +46,6 @@ def sign_in(request: SignInRequest, user_service: Annotated[UserService, Depends
 #         ))
 # def get_my_info(request: TokenRequest, user_service: Annotated[UserService, Depends(get_user_service)]):
 #     return user_service.get_my_info(request)
+@router.get("/users", response_model=List[User])
+def get_users(user_service: Annotated[UserService, Depends(get_user_service)]):
+    return user_service.get_all_users()

@@ -1,3 +1,4 @@
+import bcrypt
 from typing import List
 from sqlalchemy.exc import IntegrityError
 
@@ -17,14 +18,24 @@ from app.apps.common.common_exception import InvalidFormException
 class UserService:
     def __init__(self, user_repository: UserRepository):
         self._user_repository = user_repository
+    
+    def _hash_password(self, password: str) -> str:
+        salt = bcrypt.gensalt()
+        return bcrypt.hashpw(password.encode("utf-8"), salt).decode("utf-8")
+
+    def _verify_password(self, plain_password: str, hashed_password: str) -> bool:
+        return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password.encode("utf-8"))
 
     def sign_up_user(self, request: SignUpRequest):
         if self._user_repository.get_by_email(request.email):
             raise EmailAlreadyExistsException()
+
+        hashed_password = self._hash_password(request.password)
+
         user = User(
             name=request.name,
             email=request.email,
-            password=request.password,
+            password=hashed_password,
         )
         try:
             user = self._user_repository.create_user(user)
@@ -38,11 +49,13 @@ class UserService:
 
     def sign_in_user(self, request: SignInRequest):
         user = self._user_repository.get_by_email(request.email)
-        if not User:
+        if not user:
             raise UserNotFoundException
-        # TODO: JWT 인증 로직 추가
-        if user.password != request.password:
+        
+        if not self._verify_password(request.password, user.password):
             raise UserPermissionDeniedException
+        
+        # TODO: JWT 인증 로직 추가
         token = ""
         return UserWithToken(name=user.name, email=user.email, token=token)
 
@@ -51,3 +64,6 @@ class UserService:
     #     if not User:
     #         raise UserNotFoundException
     #     return UserResponse(id=user.id, name=user.name, email=user.email)
+
+    def get_all_users(self) -> List[User]:
+        return self._user_repository.get_users()

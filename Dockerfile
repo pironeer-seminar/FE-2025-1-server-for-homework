@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.11
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -12,11 +12,11 @@ RUN pip install -U poetry==1.8.4
 
 WORKDIR /app
 
-COPY poetry.lock pyproject.toml .
+COPY poetry.lock pyproject.toml ./
 RUN poetry install --no-root --only main
 
 COPY  . .
 
 EXPOSE 8000
 
-CMD ["poetry", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["poetry", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
