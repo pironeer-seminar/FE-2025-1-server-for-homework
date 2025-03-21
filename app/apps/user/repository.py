@@ -1,4 +1,4 @@
-import uuid
+from uuid import UUID
 from typing import List
 from sqlalchemy.orm import Session
 from sqlmodel import select
@@ -11,12 +11,8 @@ class UserRepository:
     def get_user_by_email(self, email: str):
         return self._db.query(User).filter(User.email == email).first()
 
-    def get_user_by_id(self, id: str):
-        try:
-            uuid_id = uuid.UUID(id)
-        except ValueError:
-            return None
-        return self._db.query(User).filter(User.id == uuid_id).first()
+    def get_user_by_id(self, user_id: UUID):
+        return self._db.query(User).filter(User.id == user_id).first()
 
     def create_user(self, user: User):
         self._db.add(user)
@@ -24,5 +20,15 @@ class UserRepository:
         self._db.refresh(user)
         return user
 
-    def get_users(self) -> List[User]:
-        return self._db.execute(select(User)).scalars().all()
+    def put_user(self, user_id: UUID, user: User):
+        updated_user = self.get_user_by_id(user_id)
+        if user.name is not None:
+            updated_user.name = user.name
+        if user.slogan is not None:
+            updated_user.slogan = user.slogan
+        if user.favorites is not None:
+            updated_user.favorites = user.favorites
+
+        self._db.commit()
+        self._db.refresh(updated_user)
+        return updated_user

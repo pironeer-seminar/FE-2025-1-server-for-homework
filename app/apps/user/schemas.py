@@ -1,5 +1,6 @@
 import re
 import uuid
+from typing import List
 from pydantic import BaseModel
 from pydantic import EmailStr
 from pydantic import Field
@@ -29,13 +30,24 @@ class SignInRequest(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=8, max_length=64)
 
+class PutNameRequest(BaseModel):
+    name: str = Field(..., max_length=30)
+
+class PutSloganRequest(BaseModel):
+    slogan: str = Field(..., max_length=200)
+
+class PutFavoritesRequest(BaseModel):
+    favorites: List[str] = Field(..., max_length=2048)
+
 class UserWithToken(BaseModel):
     id: uuid.UUID
-    name: str = Field(..., max_length=30)
+    name: str
     email: EmailStr
     token: str
 
 class UserResponse(BaseModel):
     id: uuid.UUID
-    name: str = Field(..., max_length=30)
+    name: str
     email: EmailStr
+    slogan: str
+    favorites: List[str]

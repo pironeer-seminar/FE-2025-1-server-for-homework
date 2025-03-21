@@ -19,6 +19,9 @@ from app.apps.middleware.exceptions import InvalidTokenError
 from app.apps.user.schemas import SignUpRequest
 from app.apps.user.schemas import SignInRequest
 from app.apps.user.schemas import UserResponse
+from app.apps.user.schemas import PutNameRequest
+from app.apps.user.schemas import PutSloganRequest
+from app.apps.user.schemas import PutFavoritesRequest
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -61,6 +64,26 @@ def get_my_info(
     ):
     return user_service.get_my_info(token)
 
-@router.get("/users", response_model=List[UserResponse])
-def get_users(user_service: Annotated[UserService, Depends(get_user_service)]):
-    return user_service.get_all_users()
+@router.put("/profile/name")
+def create_or_patch_name(
+        token: Annotated[str, Depends(get_token)],
+        request: PutNameRequest,
+        user_service: Annotated[UserService, Depends(get_user_service)]
+    ):
+    return user_service.create_or_patch_name(token, request)
+
+@router.put("profile/slogan")
+def create_or_patch_slogan(
+        token: Annotated[str, Depends(get_token)],
+        request: PutSloganRequest,
+        user_service: Annotated[UserService, Depends(get_user_service)]
+    ):
+    return user_service.create_or_patch_slogan(token, request)
+
+@router.put("/profile/favorites")
+def create_or_patch_favorites(
+        token: Annotated[str, Depends(get_token)],
+        request: PutFavoritesRequest,
+        user_service: Annotated[UserService, Depends(get_user_service)]
+    ):
+    return user_service.create_or_patch_favorites(token, request)
