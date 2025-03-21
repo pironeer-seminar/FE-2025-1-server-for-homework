@@ -83,16 +83,12 @@ class UserService:
         if not user:
             raise UserNotFoundException
         
-        splited_favorites = None
-        if user.favorites is not None and user.favorites != "":
-            splited_favorites = user.favorites.split(',')
-        
         return UserResponse(
             id=user.id,
             name=user.name,
             email=user.email,
             slogan=user.slogan,
-            favorites=splited_favorites
+            favorites=self._middleware.favoriteStringToList(updated_user.favorites)
         )
 
     def create_or_patch_name(self, token: str, request: PutNameRequest):
