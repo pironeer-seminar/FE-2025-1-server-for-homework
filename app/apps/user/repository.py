@@ -32,3 +32,19 @@ class UserRepository:
         self._db.commit()
         self._db.refresh(updated_user)
         return updated_user
+    
+    def reset_user_slogan(self, user_id):
+        updated_user = self.get_user_by_id(user_id)
+        updated_user.slogan = None
+
+        self._db.commit()
+        self._db.refresh(updated_user)
+        return updated_user
+    
+    def reset_user_favorites(self, user_id):
+        updated_user = self.get_user_by_id(user_id)
+        updated_user.favorites = None
+
+        self._db.commit()
+        self._db.refresh(updated_user)
+        return updated_user

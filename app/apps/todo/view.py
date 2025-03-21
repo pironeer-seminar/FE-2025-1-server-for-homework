@@ -34,7 +34,7 @@ def get_todo_service(db_session: Annotated[Session, Depends(get_db_session)]) ->
     todo_repository = TodoRepository(db_session)
     return TodoService(todo_repository, middleware)
 
-@router.post("/", responses=responses_from(
+@router.post("/", response_model=TodoResponse, responses=responses_from(
             InvalidTokenError,
             InvalidFormException,
             UserPermissionDeniedException
@@ -46,7 +46,7 @@ def create_todo(
     ):
     return todo_service.create_todo(token, request)
 
-@router.get("/", responses=responses_from(
+@router.get("/", response_model=List[TodoResponse], responses=responses_from(
             InvalidTokenError,
             UserPermissionDeniedException
         ))
@@ -56,7 +56,7 @@ def get_all_todos(
     ):
     return todo_service.get_all_todos(token)
 
-@router.patch("/{todo_id}", responses=responses_from(
+@router.patch("/{todo_id}", response_model=TodoResponse, responses=responses_from(
             InvalidTokenError,
             UserPermissionDeniedException
         ))
@@ -68,7 +68,7 @@ def update_todo_contents(
     ):
     return todo_service.update_todo_contents(todo_id, request, token)
 
-@router.patch("/completed/{todo_id}", responses=responses_from(
+@router.patch("/completed/{todo_id}", response_model=TodoResponse, responses=responses_from(
             InvalidTokenError,
             UserPermissionDeniedException
         ))
@@ -80,7 +80,7 @@ def update_todo_completed(
     ):
     return todo_service.update_todo_completed(todo_id, request, token)
 
-@router.delete("/{todo_id}")
+@router.delete("/{todo_id}", response_model=TodoResponse)
 def delete_todo(
         todo_id: str,
         token: Annotated[str, Depends(get_token)],

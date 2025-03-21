@@ -18,6 +18,7 @@ from app.apps.common.common_exception import InvalidFormException
 from app.apps.middleware.exceptions import InvalidTokenError
 from app.apps.user.schemas import SignUpRequest
 from app.apps.user.schemas import SignInRequest
+from app.apps.user.schemas import UserWithToken
 from app.apps.user.schemas import UserResponse
 from app.apps.user.schemas import PutNameRequest
 from app.apps.user.schemas import PutSloganRequest
@@ -38,7 +39,7 @@ def get_user_service(db_session: Annotated[Session, Depends(get_db_session)]) ->
     user_repository = UserRepository(db_session)
     return UserService(user_repository, middleware)
 
-@router.post("/", responses=responses_from(
+@router.post("/", response_model=UserWithToken, responses=responses_from(
             UserAlreadyExistsException,
             EmailAlreadyExistsException,
             InvalidFormException
@@ -46,14 +47,14 @@ def get_user_service(db_session: Annotated[Session, Depends(get_db_session)]) ->
 def sign_up(request: SignUpRequest, user_service: Annotated[UserService, Depends(get_user_service)]):
     return user_service.sign_up_user(request)
 
-@router.post("/session", responses=responses_from(      
+@router.post("/session", response_model=UserWithToken, responses=responses_from(      
             UserNotFoundException,
             InvalidFormException
         ))
 def sign_in(request: SignInRequest, user_service: Annotated[UserService, Depends(get_user_service)]):
     return user_service.sign_in_user(request)
 
-@router.get("/me", responses=responses_from(
+@router.get("/me", response_model=UserResponse, responses=responses_from(
             UserNotFoundException,
             InvalidFormException,
             InvalidTokenError
@@ -64,7 +65,7 @@ def get_my_info(
     ):
     return user_service.get_my_info(token)
 
-@router.put("/profile/name")
+@router.put("/profile/name", response_model=UserResponse)
 def create_or_patch_name(
         token: Annotated[str, Depends(get_token)],
         request: PutNameRequest,
@@ -72,7 +73,7 @@ def create_or_patch_name(
     ):
     return user_service.create_or_patch_name(token, request)
 
-@router.put("profile/slogan")
+@router.put("profile/slogan", response_model=UserResponse)
 def create_or_patch_slogan(
         token: Annotated[str, Depends(get_token)],
         request: PutSloganRequest,
@@ -80,7 +81,7 @@ def create_or_patch_slogan(
     ):
     return user_service.create_or_patch_slogan(token, request)
 
-@router.put("/profile/favorites")
+@router.put("/profile/favorites", response_model=UserResponse)
 def create_or_patch_favorites(
         token: Annotated[str, Depends(get_token)],
         request: PutFavoritesRequest,

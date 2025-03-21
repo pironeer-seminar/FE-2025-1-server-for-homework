@@ -82,36 +82,53 @@ class UserService:
         user=self._middleware.get_current_user(token)
         if not user:
             raise UserNotFoundException
+        
+        splited_favorites = None
+        if user.favorites is not None and user.favorites != "":
+            splited_favorites = user.favorites.split(',')
+        
         return UserResponse(
             id=user.id,
             name=user.name,
             email=user.email,
             slogan=user.slogan,
-            favorites=user.favorites.split(',')
+            favorites=splited_favorites
         )
 
     def create_or_patch_name(self, token: str, request: PutNameRequest):
         user=self._middleware.get_current_user(token)
         if not user:
             raise UserNotFoundException
+        
         user_request = User(
             name = request.name
         )
 
         updated_user = self._user_repository.put_user(user.id, user_request)
-
         return UserResponse(
-            id=updated_user.id,
-            name=updated_user.name,
-            email=updated_user.email,
-            slogan=updated_user.slogan,
-            favorites=updated_user.favorites.split(',')
-        )
+                id=updated_user.id,
+                name=updated_user.name,
+                email=updated_user.email,
+                slogan=updated_user.slogan,
+                favorites=self._middleware.favoriteStringToList(updated_user.favorites)
+            )
+        
 
     def create_or_patch_slogan(self, token: str, request: PutSloganRequest):
         user=self._middleware.get_current_user(token)
         if not user:
             raise UserNotFoundException
+        
+        if request.slogan is None:
+            updated_user = self._user_repository.reset_user_slogan(user.id)
+            return UserResponse(
+                id=updated_user.id,
+                name=updated_user.name,
+                email=updated_user.email,
+                slogan=updated_user.slogan,
+                favorites=self._middleware.favoriteStringToList(updated_user.favorites)
+            )
+        
         user_request = User(
             slogan = request.slogan
         )
@@ -123,26 +140,40 @@ class UserService:
             name=updated_user.name,
             email=updated_user.email,
             slogan=updated_user.slogan,
-            favorites=updated_user.favorites.split(',')
+            favorites=self._middleware.favoriteStringToList(updated_user.favorites)
         )
 
     def create_or_patch_favorites(self, token: str, request: PutFavoritesRequest):
-        if len(request.favorites) > MAX_FAVORITES_SIZE:
-            raise InvalidFormException
-
         user=self._middleware.get_current_user(token)
         if not user:
             raise UserNotFoundException
+
+        if request.favorites is None:
+            updated_user = self._user_repository.reset_user_favorites(user.id)
+            return UserResponse(
+                id=updated_user.id,
+                name=updated_user.name,
+                email=updated_user.email,
+                slogan=updated_user.slogan,
+                favorites=self._middleware.favoriteStringToList(updated_user.favorites)
+            )
+        
+        if len(request.favorites) > MAX_FAVORITES_SIZE:
+            raise InvalidFormException
+        
         user_request = User(
             favorites = ','.join(request.favorites)
         )
-
         updated_user = self._user_repository.put_user(user.id, user_request)
+
+        splited_favorites = None
+        if user.favorites is not None and user.favorites != "":
+            splited_favorites = user.favorites.split(',')
 
         return UserResponse(
             id=updated_user.id,
             name=updated_user.name,
             email=updated_user.email,
             slogan=updated_user.slogan,
-            favorites=updated_user.favorites.split(',')
+            favorites=splited_favorites
         )

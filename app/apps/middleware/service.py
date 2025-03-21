@@ -1,6 +1,7 @@
 import os
 import jwt
 from uuid import UUID
+from typing import List
 
 from app.apps.common.enums import TokenType
 from app.apps.user.repository import UserRepository
@@ -64,3 +65,9 @@ class MiddlewareService:
         if user is None:
             raise InvalidTokenError
         return user
+    
+    def favoriteStringToList(self, favorites: str | None) -> List[str] | None:
+        if favorites is None or favorites == "":
+            return None
+        if favorites == "":
+            return favorites.split(',')
