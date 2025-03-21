@@ -88,7 +88,7 @@ class UserService:
             name=user.name,
             email=user.email,
             slogan=user.slogan,
-            favorites=self._middleware.favoriteStringToList(updated_user.favorites)
+            favorites=self._middleware.favoriteStringToList(user.favorites)
         )
 
     def create_or_patch_name(self, token: str, request: PutNameRequest):
