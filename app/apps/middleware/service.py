@@ -3,7 +3,7 @@ import jwt
 
 from app.apps.common.enums import TokenType
 from app.apps.user.repository import UserRepository
-from app.apps.user.model import User
+from app.apps.user.repository import User
 from app.apps.middleware.exceptions import ExpiredSignatureError
 from app.apps.middleware.exceptions import InvalidTokenError
 from app.apps.middleware.exceptions import BlockedTokenError

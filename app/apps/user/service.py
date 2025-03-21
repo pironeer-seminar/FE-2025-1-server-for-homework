@@ -7,9 +7,9 @@ from typing import List
 from sqlalchemy.exc import IntegrityError
 
 from app.apps.common.enums import TokenType
-from app.apps.user.repository import UserRepository
 from app.apps.middleware.service import MiddlewareService
-from app.apps.user.model import User
+from app.apps.user.repository import UserRepository
+from app.apps.user.repository import User
 from app.apps.user.schemas import SignUpRequest
 from app.apps.user.schemas import SignInRequest
 from app.apps.user.schemas import UserWithToken

@@ -8,9 +8,9 @@ from sqlmodel import Session
 
 from app.database import get_db_session
 from app.apps.common.exceptions import responses_from
-from app.apps.middleware.service import MiddlewareService
+from app.apps.middleware.view import get_middleware_service
 from app.apps.user.service import UserService
-from app.apps.user.repository import UserRepository
+from app.apps.user.service import UserRepository
 from app.apps.user.exceptions import EmailAlreadyExistsException
 from app.apps.user.exceptions import UserAlreadyExistsException
 from app.apps.user.exceptions import UserNotFoundException
@@ -31,8 +31,8 @@ def get_token(credentials: HTTPAuthorizationCredentials = Depends(oauth2_scheme)
     return token
 
 def get_user_service(db_session: Annotated[Session, Depends(get_db_session)]) -> UserService:
+    middleware = get_middleware_service(db_session)
     user_repository = UserRepository(db_session)
-    middleware = MiddlewareService(user_repository)
     return UserService(user_repository, middleware)
 
 @router.post("/", responses=responses_from(
