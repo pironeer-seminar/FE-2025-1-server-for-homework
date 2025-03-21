@@ -14,13 +14,11 @@ from app.apps.user.schemas import SignUpRequest
 from app.apps.user.schemas import SignInRequest
 from app.apps.user.schemas import UserWithToken
 from app.apps.user.schemas import UserResponse
-from app.apps.common.schemas import TokenRequest
 from app.apps.user.exceptions import EmailAlreadyExistsException
 from app.apps.user.exceptions import UserAlreadyExistsException
 from app.apps.user.exceptions import UserNotFoundException
-from app.apps.user.exceptions import UserPermissionDeniedException
-from app.apps.middleware.exceptions import InvalidTokenError
 from app.apps.common.common_exception import InvalidFormException
+from app.apps.common.common_exception import UserPermissionDeniedException
 
 class UserService:
     def __init__(self, user_repository: UserRepository, middleware: MiddlewareService):
@@ -91,7 +89,7 @@ class UserService:
 
     def get_my_info(self, token: str):
         user=self._middleware.get_current_user(token)
-        if not User:
+        if not user:
             raise UserNotFoundException
         return UserResponse(id=user.id, name=user.name, email=user.email)
 

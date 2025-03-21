@@ -1,11 +1,13 @@
-import uuid
-from sqlmodel import SQLModel, Field
+from uuid import UUID
+from uuid import uuid4
+from sqlmodel import SQLModel
+from sqlmodel import Field
+from sqlmodel import Relationship
+from typing import List
+from typing import TYPE_CHECKING
 
 class User(SQLModel, table=True):
-    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
     name: str = Field(..., max_length=30)
     email: str = Field(..., index=True, sa_column_kwargs={"unique": True})
     password: str = Field(..., max_length=255)
-
-    class Config:
-        json_encoders = {uuid.UUID: str}
