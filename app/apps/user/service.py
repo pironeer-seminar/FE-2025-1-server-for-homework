@@ -19,6 +19,7 @@ from app.apps.user.exceptions import EmailAlreadyExistsException
 from app.apps.user.exceptions import UserAlreadyExistsException
 from app.apps.user.exceptions import UserNotFoundException
 from app.apps.user.exceptions import UserPermissionDeniedException
+from app.apps.middleware.exceptions import InvalidTokenError
 from app.apps.common.common_exception import InvalidFormException
 
 class UserService:
@@ -58,7 +59,7 @@ class UserService:
     #     return access_token, refresh_token
 
     def sign_up_user(self, request: SignUpRequest):
-        if self._user_repository.get_by_email(request.email):
+        if self._user_repository.get_user_by_email(request.email):
             raise EmailAlreadyExistsException
 
         hashed_password = self._hash_password(request.password)
@@ -79,20 +80,20 @@ class UserService:
         return UserWithToken(id=user.id, name=user.name, email=user.email, token=token)
 
     def sign_in_user(self, request: SignInRequest):
-        user = self._user_repository.get_by_email(request.email)
+        user = self._user_repository.get_user_by_email(request.email)
         if not user:
             raise UserNotFoundException
         if not self._verify_password(request.password, user.password):
             raise UserPermissionDeniedException
-        
+
         token = self._issue_token(user.id)
         return UserWithToken(id=user.id, name=user.name, email=user.email, token=token)
 
-    # def get_my_info(self, request: TokenRequest):
-    #     user = self._user_repository.get_by_token(request)
-    #     if not User:
-    #         raise UserNotFoundException
-    #     return UserResponse(id=user.id, name=user.name, email=user.email)
+    def get_my_info(self, token: str):
+        user=self._middleware.get_current_user(token)
+        if not User:
+            raise UserNotFoundException
+        return UserResponse(id=user.id, name=user.name, email=user.email)
 
     def get_all_users(self) -> List[User]:
         users = self._user_repository.get_users()

@@ -52,7 +52,7 @@ class MiddlewareService:
         return payload["sub"]
 
     def get_current_user(self, token: str) -> User:
-        id = self.validate_token(token)
+        id = self.validate_access_token(token)
         user = self._user_repository.get_user_by_id(id)
         if user is None:
             raise InvalidTokenError
