@@ -6,3 +6,6 @@ class User(SQLModel, table=True):
     name: str = Field(..., max_length=30)
     email: str = Field(..., index=True, sa_column_kwargs={"unique": True})
     password: str = Field(..., max_length=255)
+
+    class Config:
+        json_encoders = {uuid.UUID: str}

@@ -1,4 +1,5 @@
 import re
+import uuid
 from pydantic import BaseModel
 from pydantic import EmailStr
 from pydantic import Field
@@ -29,11 +30,12 @@ class SignInRequest(BaseModel):
     password: str = Field(..., min_length=8, max_length=64)
 
 class UserWithToken(BaseModel):
+    id: uuid.UUID
     name: str = Field(..., max_length=30)
     email: EmailStr
     token: str
 
 class UserResponse(BaseModel):
-    id: str
+    id: uuid.UUID
     name: str = Field(..., max_length=30)
     email: EmailStr

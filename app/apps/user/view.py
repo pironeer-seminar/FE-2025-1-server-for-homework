@@ -6,23 +6,23 @@ from sqlmodel import Session
 
 from app.database import get_db_session
 from app.apps.common.exceptions import responses_from
+from app.apps.middleware.service import MiddlewareService
 from app.apps.user.service import UserService
 from app.apps.user.repository import UserRepository
 from app.apps.user.exceptions import EmailAlreadyExistsException
 from app.apps.user.exceptions import UserAlreadyExistsException
 from app.apps.user.exceptions import UserNotFoundException
-from app.apps.user.exceptions import UserPermissionDeniedException
 from app.apps.common.common_exception import InvalidFormException
 from app.apps.user.schemas import SignUpRequest
 from app.apps.user.schemas import SignInRequest
-from app.apps.common.schemas import TokenRequest
-from app.apps.user.model import User
+from app.apps.user.schemas import UserResponse
 
 router = APIRouter(prefix="/users", tags=["users"])
 
 def get_user_service(db_session: Annotated[Session, Depends(get_db_session)]) -> UserService:
     user_repository = UserRepository(db_session)
-    return UserService(user_repository)
+    middleware = MiddlewareService(user_repository)
+    return UserService(user_repository, middleware)
 
 @router.post("/", responses=responses_from(
             UserAlreadyExistsException,
@@ -46,6 +46,7 @@ def sign_in(request: SignInRequest, user_service: Annotated[UserService, Depends
 #         ))
 # def get_my_info(request: TokenRequest, user_service: Annotated[UserService, Depends(get_user_service)]):
 #     return user_service.get_my_info(request)
-@router.get("/users", response_model=List[User])
+
+@router.get("/users", response_model=List[UserResponse])
 def get_users(user_service: Annotated[UserService, Depends(get_user_service)]):
     return user_service.get_all_users()

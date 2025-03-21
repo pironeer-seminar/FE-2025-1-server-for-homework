@@ -18,4 +18,4 @@ class UserRepository:
         return user
 
     def get_users(self) -> List[User]:
-        return self._db.execute(select(User)).all()
+        return self._db.execute(select(User)).scalars().all()

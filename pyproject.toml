@@ -12,6 +12,7 @@ fastapi = {extras = ["standard"], version = "^0.115.11"}
 dotenv = "^0.9.9"
 mysqlclient = "^2.2.7"
 bcrypt = "^4.3.0"
+pyjwt = "^2.10.1"
 
 
 [tool.poetry.group.dev.dependencies]
