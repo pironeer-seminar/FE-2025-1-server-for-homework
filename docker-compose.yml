@@ -10,7 +10,8 @@ services:
       - ./nginx/ssl-params.conf:/etc/nginx/ssl-params.conf:ro
 
     depends_on:
-      - app
+      app:
+        condition: service_healthy
 
   app:
     build: .
@@ -22,6 +23,12 @@ services:
       - mynetwork
     environment:
       - PYTHONPATH=/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 30s
+      retries: 3
+      start_period: 5s
+      timeout: 10s
 
 networks:
   mynetwork:
