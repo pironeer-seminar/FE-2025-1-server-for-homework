@@ -10,7 +10,7 @@ app.add_middleware(
     allow_origins=[
             "http://localhost:5173",
             "https://homework-fe-2025-1-week3-navy.vercel.app",
-            "https://homework-fe-2025-1-week3-navy.vercel.app"
+            "https://homework-fe-2025-1-week3.vercel.app/"
         ],
     allow_credentials=True,
     allow_methods=["*"],
